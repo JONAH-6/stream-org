@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply Now - Stream</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(180deg, #0f2f2c 0%, #0b1e1c 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Glowing background effects */
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .glow-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(79, 166, 160, 0.15) 0%, transparent 70%);
+        }
+
+        .glow-1 {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            left: 10%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .glow-2 {
+            width: 200px;
+            height: 200px;
+            bottom: 15%;
+            right: 10%;
+            animation: float 12s infinite ease-in-out reverse;
+        }
+
+        .glow-3 {
+            width: 150px;
+            height: 150px;
+            top: 50%;
+            left: 80%;
+            animation: float 10s infinite ease-in-out;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+
+        /* Container with glass effect */
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(46, 63, 60, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(79, 166, 160, 0.3);
+            box-shadow:
+                0 10px 40px rgba(11, 30, 28, 0.6),
+                0 0 0 1px rgba(79, 166, 160, 0.1) inset;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg,
+                    transparent,
+                    #4fa6a0,
+                    transparent);
+            z-index: 2;
+        }
+
+        /* Header */
+        .form-header {
+            text-align: center;
+            margin-bottom: 35px;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 36px;
+            font-weight: 800;
+            color: #4fa6a0;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(79, 166, 160, 0.3);
+        }
+
+        .form-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .form-header p {
+            color: #c7d6d3;
+            font-size: 16px;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(15, 47, 44, 0.7);
+            border: 1px solid rgba(79, 166, 160, 0.2);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        input::placeholder {
+            color: #9fb6b2;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #4fa6a0;
+            box-shadow: 0 0 0 3px rgba(79, 166, 160, 0.2);
+            background: rgba(15, 47, 44, 0.9);
+        }
+
+        .plan-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .plan-option {
+            background: rgba(15, 47, 44, 0.7);
+            border: 1px solid rgba(79, 166, 160, 0.2);
+            border-radius: 12px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .plan-option.selected {
+            border-color: #4fa6a0;
+            background: rgba(79, 166, 160, 0.15);
+            box-shadow: 0 5px 20px rgba(79, 166, 160, 0.2);
+        }
+
+        .plan-option.selected::before {
+            content: '✓';
+            position: absolute;
+            top: 40px;
+            right: 15px;
+            width: 25px;
+            height: 25px;
+            background: #4fa6a0;
+            color: #0b1e1c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .plan-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #4fa6a0;
+        }
+
+        .plan-price {
+            font-weight: 800;
+            color: #4fa6a0;
+            font-size: 18px;
+        }
+
+        .plan-description {
+            font-size: 14px;
+            color: #c7d6d3;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, #4fa6a0 0%, #1f6f6a 100%);
+            color: #0b1e1c;
+            padding: 16px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(79, 166, 160, 0.3);
+            margin-top: 25px;
+            text-align: center;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(79, 166, 160, 0.4);
+            background: linear-gradient(135deg, #1f6f6a 0%, #4fa6a0 100%);
+        }
+
+        /* Back to Home Link */
+        .back-link {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(79, 166, 160, 0.2);
+        }
+
+        .back-link a {
+            color: #4fa6a0;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 20px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-link a:hover {
+            background: rgba(79, 166, 160, 0.1);
+            text-decoration: none;
+            padding: 10px 25px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Animated background glow effects -->
+    <div class="bg-glow">
+        <div class="glow-circle glow-1"></div>
+        <div class="glow-circle glow-2"></div>
+        <div class="glow-circle glow-3"></div>
+    </div>
+
+    <div class="container">
+        <div class="form-header">
+            <div class="logo">Stream</div>
+            <h1>Join Stream Today</h1>
+            <p>Complete your registration to access dashboard</p>
+        </div>
+
+        <form id="registrationForm">
+            <div class="form-group">
+                <input type="text" id="fullName" name="fullName" placeholder="Full Name" required>
+            </div>
+
+            <div class="form-group">
+                <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="Phone Number" required>
+            </div>
+
+            <div class="form-group">
+                <input type="email" id="email" name="email" placeholder="Email Address" required>
+            </div>
+
+            <div class="form-group">
+                <select id="country" name="country" required>
+                    <option value="" disabled selected>Select Country</option>
+                    <option value="nigeria">Nigeria</option>
+                    <option value="ghana">Ghana</option>
+                    <option value="south-africa">South Africa</option>
+                    <option value="kenya">Kenya</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <p style="color: #c7d6d3; margin-bottom: 10px; font-weight: 600;">Choose Your Plan</p>
+                <div class="plan-options">
+                    <div class="plan-option selected" data-plan="plus" data-price="12000">
+                        <div class="plan-header">
+                            <span class="plan-name">Stream Reward Plus</span>
+                            <span class="plan-price">₦12,000</span>
+                        </div>
+                        <div class="plan-description">Full access to all earning features</div>
+                    </div>
+                </div>
+                <input type="hidden" id="selectedPlan" name="selectedPlan" value="plus">
+                <input type="hidden" id="selectedPlanPrice" name="selectedPlanPrice" value="12000">
+            </div>
+
+            <!-- FIXED BUTTON: Removed <a> tag inside -->
+            <button type="submit" class="btn">Proceed to Dashboard</button>
+        </form>
+
+        <div class="back-link">
+            <a href="index.html">← Back to Home</a>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Auto-select the only plan
+            const planOption = document.querySelector('.plan-option');
+            if (planOption) {
+                planOption.classList.add('selected');
+                document.getElementById('selectedPlan').value = planOption.getAttribute('data-plan');
+                document.getElementById('selectedPlanPrice').value = planOption.getAttribute('data-price');
+            }
+        });
+
+        // Form submission - redirect to dashboard
+        document.getElementById('registrationForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Validate form
+            const fullName = document.getElementById('fullName').value.trim();
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const country = document.getElementById('country').value;
+            const selectedPlan = document.getElementById('selectedPlan').value;
+            const selectedPlanPrice = document.getElementById('selectedPlanPrice').value;
+
+            // Basic validation
+            if (!fullName || !phoneNumber || !email || !country) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            if (phoneNumber.length < 10) {
+                alert('Please enter a valid phone number.');
+                return;
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+
+            // Store user data in localStorage to use in dashboard
+            const userData = {
+                fullName: fullName,
+                phoneNumber: phoneNumber,
+                email: email,
+                country: country,
+                plan: selectedPlan,
+                planPrice: selectedPlanPrice,
+                registeredAt: new Date().toISOString()
+            };
+
+            localStorage.setItem('streamUserData', JSON.stringify(userData));
+
+            // ✅ Debug logs – placed correctly inside the submit handler
+            console.log('Form submitted!');
+            console.log('User data saved:', userData);
+            console.log('Redirecting to: dashbord.html');
+
+            // Redirect to dashboard
+            window.location.href = 'dashbord.html';
+        });
+    </script>
+</body>
+
+</html>
