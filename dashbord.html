@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,10 +33,11 @@
             border-radius: 0;
             overflow: hidden;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4),
-                        0 0 0 1px rgba(255, 255, 255, 0.08);
+                0 0 0 1px rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.05);
             /* Add bottom padding so content isn't hidden behind fixed action bar */
-            padding-bottom: 90px; /* height of action-buttons + some extra */
+            padding-bottom: 90px;
+            /* height of action-buttons + some extra */
         }
 
         .dashboard-header {
@@ -344,8 +346,15 @@
         }
 
         @keyframes modalFadeIn {
-            from { opacity: 0; transform: translateY(20px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
         .activation-header {
@@ -438,21 +447,49 @@
 
         /* responsive adjustments */
         @media (max-width: 600px) {
-            .dashboard-header { padding: 20px 15px; }
-            .quick-links-section { padding: 20px 15px; }
-            .stream-section { padding: 20px 15px; }
-            .quick-links-grid { grid-template-columns: repeat(3, 1fr); }
-            .earnings-amount { font-size: 36px; }
-            .user-avatar { width: 45px; height: 45px; }
-            .dashboard-container { padding-bottom: 85px; }
-            .action-btn { padding: 12px 5px; font-size: 12px; }
+            .dashboard-header {
+                padding: 20px 15px;
+            }
+
+            .quick-links-section {
+                padding: 20px 15px;
+            }
+
+            .stream-section {
+                padding: 20px 15px;
+            }
+
+            .quick-links-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .earnings-amount {
+                font-size: 36px;
+            }
+
+            .user-avatar {
+                width: 45px;
+                height: 45px;
+            }
+
+            .dashboard-container {
+                padding-bottom: 85px;
+            }
+
+            .action-btn {
+                padding: 12px 5px;
+                font-size: 12px;
+            }
         }
 
         @media (max-width: 400px) {
-            .quick-links-grid { grid-template-columns: repeat(2, 1fr); }
+            .quick-links-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="dashboard-container">
         <!-- Header -->
@@ -567,7 +604,8 @@
             </div>
             <div class="activation-icon"><i class="fas fa-lock"></i></div>
             <h2 class="activation-title">Kindly Activate Account</h2>
-            <p class="activation-message">You need to activate your account to access withdrawals and other features.</p>
+            <p class="activation-message">You need to activate your account to access withdrawals and other features.
+            </p>
             <button class="activate-now-btn" id="activateNowBtn"><i class="fas fa-bolt"></i> Activate Account</button>
             <a class="cancel-link" id="cancelModalLink">Maybe later</a>
         </div>
@@ -636,4 +674,5 @@
         });
     </script>
 </body>
+
 </html>
