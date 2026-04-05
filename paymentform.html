@@ -451,16 +451,45 @@
     </div>
 
     <script>
-        // Load user data from localStorage (only for amount)
-        document.addEventListener('DOMContentLoaded', function () {
-            const userData = JSON.parse(localStorage.getItem('streamUserData'));
+        // Function to get URL parameter
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
 
-            if (userData) {
-                const amount = userData.planPrice ? parseInt(userData.planPrice) : 12000;
-                document.getElementById('amountToPay').textContent = `₦${amount.toLocaleString()}`;
+        document.addEventListener('DOMContentLoaded', function () {
+            let amount = null;
+
+            // First try to get amount from URL parameter
+            const urlAmount = getUrlParameter('amount');
+            if (urlAmount && !isNaN(urlAmount)) {
+                amount = parseInt(urlAmount);
             } else {
-                alert('Please complete registration first');
-                window.location.href = 'form.html';
+                // Fallback to localStorage
+                const userData = JSON.parse(localStorage.getItem('streamUserData'));
+                if (userData && userData.planPrice) {
+                    amount = parseInt(userData.planPrice);
+                }
+            }
+
+            // Default to 12,000 if still not set
+            if (!amount || isNaN(amount)) {
+                amount = 12000;
+            }
+
+            // Update the displayed amount
+            const amountElement = document.getElementById('amountToPay');
+            amountElement.textContent = `₦${amount.toLocaleString()}`;
+
+            // Also update the Telegram link to include the amount for clarity
+            const telegramBtn = document.getElementById('telegramBtn');
+            const originalHref = telegramBtn.getAttribute('href');
+            // Add amount to the message if not already present
+            if (originalHref && !originalHref.includes('amount=')) {
+                const encodedAmount = encodeURIComponent(`₦${amount.toLocaleString()}`);
+                // Append amount to the existing text
+                const newHref = originalHref + `%20(Amount%20${encodedAmount})`;
+                telegramBtn.setAttribute('href', newHref);
             }
         });
 
