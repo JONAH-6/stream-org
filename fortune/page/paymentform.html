@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activate Account - Stream</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* === full width background + inner text spacing === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0b1e1c 0%, #0f2f2c 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .glow-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(79, 166, 160, 0.15) 0%, transparent 70%);
+        }
+
+        .glow-1 {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            left: 10%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .glow-2 {
+            width: 200px;
+            height: 200px;
+            bottom: 15%;
+            right: 10%;
+            animation: float 12s infinite ease-in-out reverse;
+        }
+
+        .glow-3 {
+            width: 150px;
+            height: 150px;
+            top: 50%;
+            left: 80%;
+            animation: float 10s infinite ease-in-out;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+
+        .container {
+            width: 100%;
+            max-width: none;
+            margin: 0;
+            background: rgba(46, 63, 60, 0.95);
+            backdrop-filter: blur(20px);
+            border: none;
+            box-shadow: 0 20px 50px rgba(11, 30, 28, 0.8);
+            position: relative;
+            z-index: 1;
+            border-radius: 0;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #4fa6a0, transparent);
+            z-index: 2;
+        }
+
+        .payment-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(79, 166, 160, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 47, 44, 0.5);
+            width: 100%;
+        }
+
+        .payment-header h2 {
+            color: #ffffff;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-link {
+            color: #4fa6a0;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: rgba(79, 166, 160, 0.1);
+        }
+
+        .cancel-btn {
+            background: rgba(79, 166, 160, 0.1);
+            color: #ffffff;
+            text-decoration: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            border: 1px solid rgba(79, 166, 160, 0.2);
+        }
+
+        .cancel-btn:hover {
+            background: rgba(79, 166, 160, 0.3);
+            transform: rotate(90deg);
+            border-color: rgba(79, 166, 160, 0.5);
+        }
+
+        .payment-body {
+            padding: 25px 20px 0 20px;
+            width: 100%;
+        }
+
+        .payment-details {
+            background: rgba(15, 47, 44, 0.7);
+            padding: 25px 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(79, 166, 160, 0.2);
+            border-left: none;
+            border-right: none;
+            width: 100%;
+        }
+
+        .payment-details h3 {
+            color: #4fa6a0;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .payment-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(79, 166, 160, 0.1);
+            font-size: 16px;
+        }
+
+        .payment-label {
+            color: #c7d6d3;
+            font-weight: 500;
+            font-size: 20px;
+        }
+
+        .payment-value {
+            color: #ffffff;
+            font-weight: 200;
+            font-size: 22px;
+            font-family: 'Courier New', monospace;
+            background: rgba(79, 166, 160, 0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(79, 166, 160, 0.2);
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #4fa6a0 0%, #1f6f6a 100%);
+            color: #0b1e1c;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            transition: all 0.3s;
+            margin-left: 10px;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(79, 166, 160, 0.3);
+        }
+
+        .payment-instruction {
+            text-align: center;
+            margin: 30px 0;
+            padding: 25px 20px;
+            background: rgba(15, 47, 44, 0.5);
+            border: 2px dashed rgba(79, 166, 160, 0.3);
+            border-left: none;
+            border-right: none;
+        }
+
+        .payment-instruction p {
+            color: #ffffff;
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .timer {
+            font-size: 42px;
+            font-weight: 800;
+            color: #4fa6a0;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 0 20px rgba(79, 166, 160, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        .timer-warning {
+            font-size: 14px;
+            color: #9fb6b2;
+            margin-top: 10px;
+        }
+
+        .submit-proof {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #4fa6a0 0%, #1f6f6a 100%);
+            color: #0b1e1c;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 5px 20px rgba(79, 166, 160, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(79, 166, 160, 0.4);
+            background: linear-gradient(135deg, #1f6f6a 0%, #4fa6a0 100%);
+        }
+
+        .whatsapp-info {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #9fb6b2;
+        }
+
+        .user-warn {
+            background: #fff8e1;
+            border: 1px solid #ffc107;
+            border-radius: 5px;
+            border-left: none;
+            border-right: none;
+            padding: 8px 20px;
+            margin: 0 0 20px 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .user-warn h3 {
+            color: #e65100;
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-warn p {
+            color: #5d4037;
+            margin: 8px 0;
+            line-height: 1.4;
+            font-size: 0.95em;
+        }
+
+        .user-warn p.note {
+            color: #795548;
+            font-size: 0.9em;
+            font-style: italic;
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px dotted #ffb74d;
+        }
+
+        @media (max-width: 600px) {
+
+            .payment-header,
+            .payment-body,
+            .payment-details,
+            .payment-instruction,
+            .user-warn {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+
+            .payment-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+                font-size: large;
+            }
+
+            .timer {
+                font-size: 36px;
+            }
+
+            .payment-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-glow">
+        <div class="glow-circle glow-1"></div>
+        <div class="glow-circle glow-2"></div>
+        <div class="glow-circle glow-3"></div>
+    </div>
+
+    <div class="container">
+        <div class="payment-header">
+            <h2>Activate Your Account</h2>
+            <div class="header-actions">
+                <a href="dashbord.html" class="cancel-btn" title="Cancel and go back">
+                    <i class="fas fa-times"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="payment-body">
+            <div class="user-warn">
+                <h3>⚠️ Payment Notice</h3>
+                <p><strong>Please avoid using OPAY for payments.</strong></p>
+                <p>We recommend using PalmPay, Moniepoint, POS, or bank transfers instead.</p>
+                <p class="note">OPAY payments may cause delays in verification.</p>
+            </div>
+        </div>
+
+        <div class="payment-details">
+            <h3>Complete Payment</h3>
+
+            <!-- UPDATED ACCOUNT DETAILS (new number & name) -->
+            <div class="payment-item">
+                <span class="payment-label">Account Number</span>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="payment-value" id="accountNumber">0445978623</span>
+                    <button class="copy-btn" data-copy="0445978623">Copy</button>
+                </div>
+            </div>
+
+            <div class="payment-item">
+                <span class="payment-label">Account Name</span>
+                <span class="payment-value" id="accountName">FAVOUR ONYINYECHUKWU MALINZE</span>
+            </div>
+
+            <div class="payment-item">
+                <span class="payment-label">Bank Name</span>
+                <span class="payment-value" id="bankName">Wema Bank</span>
+            </div>
+
+            <div class="payment-item">
+                <span class="payment-label">Amount to Pay</span>
+                <span class="payment-value" id="amountToPay">₦12,000</span>
+            </div>
+
+            <div class="payment-instruction">
+                <p>Payment Time Limit</p>
+                <div class="timer" id="paymentTimer">05:00</div>
+                <p class="timer-warning">Complete payment within 5 minutes to activate your account</p>
+            </div>
+
+            <div class="submit-proof">
+                <a href="https://t.me/Top_bigmalinze/?text=Hi+Ma%2C+I+have+made+my+payment" class="submit-btn"
+                    id="telegramBtn" target="_blank">
+                    <i class="fab fa-telegram-plane"></i> Confirm Payment on Telegram
+                </a>
+                <p class="whatsapp-info">After payment, click above to send payment proof on Telegram</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load user data from localStorage (only for amount)
+        document.addEventListener('DOMContentLoaded', function () {
+            const userData = JSON.parse(localStorage.getItem('streamUserData'));
+
+            if (userData) {
+                const amount = userData.planPrice ? parseInt(userData.planPrice) : 12000;
+                document.getElementById('amountToPay').textContent = `₦${amount.toLocaleString()}`;
+            } else {
+                alert('Please complete registration first');
+                window.location.href = 'form.html';
+            }
+        });
+
+        // Timer functionality
+        const timerDiv = document.getElementById('paymentTimer');
+
+        function startTimer(duration) {
+            let timer = duration;
+            updateTimerDisplay(timer);
+
+            const interval = setInterval(() => {
+                timer--;
+                updateTimerDisplay(timer);
+
+                if (timer <= 60) {
+                    timerDiv.style.color = '#ff6b35';
+                    timerDiv.style.animationDuration = '1s';
+                }
+
+                if (timer <= 30) {
+                    timerDiv.style.color = '#ff3333';
+                    timerDiv.style.animationDuration = '0.5s';
+                }
+
+                if (timer < 0) {
+                    clearInterval(interval);
+                    timerDiv.textContent = "00:00";
+                    timerDiv.style.color = '#ff0000';
+                    timerDiv.style.animation = 'none';
+
+                    const instruction = document.querySelector('.payment-instruction');
+                    instruction.innerHTML = `
+                        <p style="color: #ff3333;">Time's Up!</p>
+                        <div class="timer" style="color: #ff3333;">00:00</div>
+                        <p class="timer-warning" style="color: #ff6666;">
+                            Please go back to dashboard and try again
+                        </p>
+                    `;
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay(timer) {
+            const minutes = Math.floor(timer / 60);
+            const seconds = timer % 60;
+            timerDiv.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        startTimer(5 * 60);
+
+        // Copy button (updated with new account number)
+        document.querySelector('.copy-btn[data-copy="0445978623"]').addEventListener('click', function () {
+            const textToCopy = this.getAttribute('data-copy');
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = this.textContent;
+                this.textContent = 'Copied ✓';
+                this.style.background = 'linear-gradient(135deg, #1f6f6a 0%, #4fa6a0 100%)';
+                setTimeout(() => {
+                    this.textContent = originalText;
+                    this.style.background = 'linear-gradient(135deg, #4fa6a0 0%, #1f6f6a 100%)';
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+
+</html>

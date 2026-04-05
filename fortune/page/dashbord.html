@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Dashboard - Stream</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* === FULL WIDTH – NO PADDING === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0b1e1c 0%, #0f2f2c 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .dashboard-container {
+            width: 100%;
+            max-width: none;
+            background: rgba(46, 63, 60, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 0;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 90px;
+        }
+
+        /* ----- LIVE ALERTS (TOP NOTIFICATIONS) ----- */
+        .live-alert-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 360px;
+            z-index: 3000;
+            pointer-events: none;
+        }
+
+        .live-alert {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 60px;
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 4px solid #ff3b30;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            pointer-events: auto;
+            animation: slideInTop 0.3s ease-out;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .live-alert.hide {
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none;
+        }
+
+        @keyframes slideInTop {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #2d4a46;
+            border: 2px solid #ff3b30;
+        }
+
+        .alert-info {
+            flex: 1;
+        }
+
+        .alert-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .live-badge {
+            background: #ff3b30;
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 30px;
+            letter-spacing: 0.5px;
+        }
+
+        .alert-text {
+            font-size: 12px;
+            color: #cbd5e0;
+        }
+
+        .join-live-btn {
+            background: linear-gradient(135deg, #ff3b30, #dc2626);
+            border: none;
+            color: white;
+            font-weight: 700;
+            font-size: 12px;
+            padding: 6px 14px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .join-live-btn:hover {
+            transform: scale(1.02);
+            background: #ff4d40;
+        }
+
+        /* rest of your existing styles (unchanged) */
+        .dashboard-header {
+            padding: 30px 20px 20px;
+            background: linear-gradient(to bottom, rgba(40, 60, 90, 0.3), transparent);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .welcome-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .welcome-text h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 5px;
+            letter-spacing: -0.3px;
+        }
+
+        .welcome-text p {
+            color: #8a9ba8;
+            font-size: 14px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 18px;
+            color: white;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .earnings-card {
+            background: rgba(9, 27, 24, 0.95);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+        }
+
+        .earnings-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .earnings-label i {
+            color: #4fd1c7;
+        }
+
+        .earnings-amount {
+            font-size: 42px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 5px;
+            letter-spacing: -1px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .plan-badge {
+            display: inline-block;
+            background: rgba(79, 209, 199, 0.2);
+            border: 1px solid rgba(79, 209, 199, 0.5);
+            border-radius: 30px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4fd1c7;
+            margin-bottom: 15px;
+        }
+
+        .balance-note {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .withdraw-btn {
+            background: linear-gradient(to right, #f56565, #ed8936);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 6px 20px rgba(245, 101, 101, 0.3);
+        }
+
+        .withdraw-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(245, 101, 101, 0.5);
+        }
+
+        .quick-links-section {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .view-all {
+            color: #4fd1c7;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .quick-links-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .quick-link-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 15px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            text-align: center;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        .quick-link-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .link-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(79, 209, 199, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #4fd1c7;
+        }
+
+        .stream-section {
+            padding: 25px 20px;
+            background: linear-gradient(to right, rgba(56, 178, 172, 0.1), transparent);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .stream-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .stream-header p {
+            color: #8a9ba8;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .boost-badge {
+            background: linear-gradient(to right, #f56565, #ed8936);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(245, 101, 101, 0.3);
+        }
+
+        .join-btn {
+            background: linear-gradient(to right, #f56565, #ed8936);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 6px 20px rgba(245, 101, 101, 0.3);
+        }
+
+        .action-buttons {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            background: rgba(15, 47, 44, 0.98);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(79, 166, 160, 0.3);
+            z-index: 1000;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            padding: 15px 5px;
+            color: #8a9ba8;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+        }
+
+        .action-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .action-btn.active {
+            color: #4fd1c7;
+        }
+
+        .action-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right, #4fd1c7, #38b2ac);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .action-icon {
+            font-size: 18px;
+        }
+
+        .activation-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 30, 28, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .activation-content {
+            background: rgba(46, 63, 60, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(79, 166, 160, 0.3);
+            width: 100%;
+            max-width: 380px;
+            padding: 30px 25px;
+            box-shadow: 0 20px 50px rgba(11, 30, 28, 0.8);
+            animation: modalFadeIn 0.4s ease-out;
+            text-align: center;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .activation-header {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+        }
+
+        .close-modal-btn {
+            background: rgba(79, 166, 160, 0.2);
+            border: none;
+            color: #ffffff;
+            font-size: 20px;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            margin-left: auto;
+        }
+
+        .close-modal-btn:hover {
+            background: rgba(79, 166, 160, 0.4);
+            transform: rotate(90deg);
+        }
+
+        .activation-icon {
+            font-size: 60px;
+            color: #f56565;
+            margin-bottom: 20px;
+        }
+
+        .activation-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .activation-message {
+            color: #c7d6d3;
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .activate-now-btn {
+            background: linear-gradient(to right, #4fd1c7, #38b2ac);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 6px 20px rgba(79, 209, 199, 0.3);
+            margin-bottom: 15px;
+            text-decoration: none;
+        }
+
+        .activate-now-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(79, 209, 199, 0.5);
+        }
+
+        .cancel-link {
+            color: #9fb6b2;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 16px;
+            display: inline-block;
+            transition: all 0.3s;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .cancel-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+        }
+
+        @media (max-width: 600px) {
+            .dashboard-header {
+                padding: 20px 15px;
+            }
+
+            .quick-links-section {
+                padding: 20px 15px;
+            }
+
+            .stream-section {
+                padding: 20px 15px;
+            }
+
+            .quick-links-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .earnings-amount {
+                font-size: 36px;
+            }
+
+            .user-avatar {
+                width: 45px;
+                height: 45px;
+            }
+
+            .dashboard-container {
+                padding-bottom: 85px;
+            }
+
+            .action-btn {
+                padding: 12px 5px;
+                font-size: 12px;
+            }
+
+            .live-alert {
+                padding: 6px 10px;
+            }
+
+            .alert-avatar {
+                width: 36px;
+                height: 36px;
+            }
+
+            .join-live-btn {
+                padding: 4px 12px;
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Live Alert Container (top floating notifications) -->
+    <div class="live-alert-container" id="liveAlertContainer"></div>
+
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="welcome-section">
+                <div class="welcome-text">
+                    <h1 id="welcomeName">Welcome back!</h1>
+                    <p id="userEmail">User</p>
+                </div>
+                <div class="user-avatar" id="userAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+
+            <!-- Earnings Card (dynamic based on plan) -->
+            <div class="earnings-card">
+                <div class="earnings-label">
+                    <i class="fas fa-chart-line"></i> Your Plan
+                </div>
+                <div class="plan-badge" id="planBadge">Stream Reward Plus</div>
+                <div class="earnings-amount" id="earningsAmount">₦12,000</div>
+                <div class="balance-note" id="balanceNote">Activate your account to start earning</div>
+                <button class="withdraw-btn modal-trigger">
+                    <i class="fas fa-wallet"></i> Withdraw
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="quick-links-section">
+            <div class="section-title">
+                Quick Links
+                <span class="view-all modal-trigger">
+                    More <i class="fas fa-arrow-right"></i>
+                </span>
+            </div>
+            <div class="quick-links-grid">
+                <button class="quick-link-item modal-trigger">
+                    <div class="link-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <span>Upload Images</span>
+                </button>
+                <button class="quick-link-item modal-trigger">
+                    <div class="link-icon"><i class="fas fa-file-download"></i></div>
+                    <span>Download Files</span>
+                </button>
+                <button class="quick-link-item modal-trigger">
+                    <div class="link-icon"><i class="fas fa-video"></i></div>
+                    <span>Join Livestreams</span>
+                </button>
+                <button class="quick-link-item modal-trigger">
+                    <div class="link-icon"><i class="fas fa-eye"></i></div>
+                    <span>Watch & Earn</span>
+                </button>
+                <button class="quick-link-item modal-trigger">
+                    <div class="link-icon"><i class="fas fa-cube"></i></div>
+                    <span>Stream Loot Box</span>
+                </button>
+                <button class="quick-link-item modal-trigger">
+                    <div class="link-icon"><i class="fab fa-telegram"></i></div>
+                    <span>Telegram Monetization</span>
+                </button>
+                <button class="quick-link-item modal-trigger">
+                    <div class="link-icon"><i class="fas fa-chart-bar"></i></div>
+                    <span>Analytics</span>
+                </button>
+                <button class="quick-link-item modal-trigger">
+                    <div class="link-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <span>Digital Course</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Stream Section -->
+        <div class="stream-section">
+            <div class="stream-header">
+                <div class="boost-badge">x10 BOOST</div>
+                <h3>Join. Stream. Earn</h3>
+                <p id="streamMessage">Join Livestreams on TikTok for x10 boost</p>
+            </div>
+            <button class="join-btn modal-trigger">
+                <i class="fab fa-tiktok"></i> Join Stream
+            </button>
+        </div>
+    </div>
+
+    <!-- Fixed Action Buttons -->
+    <div class="action-buttons">
+        <button class="action-btn active modal-trigger">
+            <div class="action-icon"><i class="fas fa-bolt"></i></div>
+            <span>Activate</span>
+        </button>
+        <button class="action-btn modal-trigger">
+            <div class="action-icon"><i class="fas fa-gamepad"></i></div>
+            <span>Games</span>
+        </button>
+        <button class="action-btn modal-trigger">
+            <div class="action-icon"><i class="fas fa-wallet"></i></div>
+            <span>Withdraw</span>
+        </button>
+        <button class="action-btn modal-trigger">
+            <div class="action-icon"><i class="fas fa-user"></i></div>
+            <span>Profile</span>
+        </button>
+    </div>
+
+    <!-- Activation Modal -->
+    <div class="activation-modal" id="activationModal">
+        <div class="activation-content">
+            <div class="activation-header">
+                <button class="close-modal-btn" id="closeModalBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="activation-icon"><i class="fas fa-lock"></i></div>
+            <h2 class="activation-title">Kindly Activate Account</h2>
+            <p class="activation-message" id="modalMessage">You need to activate your account to access withdrawals and
+                other features.</p>
+            <button class="activate-now-btn" id="activateNowBtn"><i class="fas fa-bolt"></i> Activate Account</button>
+            <a class="cancel-link" id="cancelModalLink">Maybe later</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // ---------- USER DATA ----------
+            const userData = JSON.parse(localStorage.getItem('streamUserData'));
+            if (!userData) {
+                alert('Please complete registration first');
+                window.location.href = 'form.html';
+                return;
+            }
+
+            const firstName = userData.fullName.split(' ')[0];
+            document.getElementById('welcomeName').textContent = `Welcome back, ${firstName}!`;
+            document.getElementById('userEmail').textContent = userData.email;
+            const initials = userData.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+            document.getElementById('userAvatar').innerHTML = initials || '<i class="fas fa-user"></i>';
+
+            const planPrice = userData.planPrice || 12000;
+            const planName = userData.plan === 'premium' ? 'Stream Reward Premium' : 'Stream Reward Plus';
+            const earningsAmountEl = document.getElementById('earningsAmount');
+            const planBadgeEl = document.getElementById('planBadge');
+            const balanceNoteEl = document.getElementById('balanceNote');
+            const streamMessageEl = document.getElementById('streamMessage');
+            const modalMessageEl = document.getElementById('modalMessage');
+
+            if (planPrice == 20000) {
+                earningsAmountEl.textContent = '₦20,000';
+                planBadgeEl.textContent = planName;
+                balanceNoteEl.innerHTML = 'Premium Plan – Higher daily earnings';
+                streamMessageEl.innerHTML = 'Join Livestreams on TikTok for x15 BOOST (Premium benefit)';
+                modalMessageEl.innerHTML = 'You are on the Premium Plan. Activate your account to unlock x15 boost and higher withdrawal limits.';
+            } else {
+                earningsAmountEl.textContent = '₦12,000';
+                planBadgeEl.textContent = planName;
+                balanceNoteEl.innerHTML = 'Activate your account to start earning up to ₦12,200 daily';
+                streamMessageEl.innerHTML = 'Join Livestreams on TikTok for x10 boost';
+                modalMessageEl.innerHTML = 'You need to activate your account to access withdrawals and other features.';
+            }
+
+            // ---------- INFINITE LOOPING LIVE ALERTS (6 people now) ----------
+            const alertsData = [
+                { name: "Peller", image: "peller.jpg", alt: "Peller live" },
+                { name: "Cater", image: "cater.png", alt: "Cater live" },
+                { name: "indialove", image: "indiana.png", alt: "indialove live" },
+                { name: "Shankcomics", image: "shark.png", alt: "Shankcomics live" },
+                { name: "OkikiDft", image: "okiki.png", alt: "OkikiDft live" },
+                { name: "JARVIS AI", image: "javis.jpeg", alt: "JARVIS AI live" }
+            ];
+
+            const alertContainer = document.getElementById('liveAlertContainer');
+            let currentIndex = 0;
+            let activeAlert = null;
+            let hideTimeout = null;
+            let nextTimeout = null;
+
+            function removeCurrentAlert(callback) {
+                if (activeAlert) {
+                    activeAlert.classList.add('hide');
+                    setTimeout(() => {
+                        if (activeAlert && activeAlert.parentNode) activeAlert.remove();
+                        activeAlert = null;
+                        if (callback) callback();
+                    }, 300);
+                    if (hideTimeout) clearTimeout(hideTimeout);
+                    hideTimeout = null;
+                } else {
+                    if (callback) callback();
+                }
+            }
+
+            function showAlert(index) {
+                const alert = alertsData[index % alertsData.length];
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'live-alert';
+                alertDiv.innerHTML = `
+                    <img class="alert-avatar" src="${alert.image}" alt="${alert.alt}" onerror="this.src='https://via.placeholder.com/44?text=?'">
+                    <div class="alert-info">
+                        <div class="alert-name">
+                            ${alert.name} <span class="live-badge">LIVE</span>
+                        </div>
+                        <div class="alert-text">is now streaming</div>
+                    </div>
+                    <button class="join-live-btn">Join Live</button>
+                `;
+                const joinBtn = alertDiv.querySelector('.join-live-btn');
+                joinBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openModal();
+                    if (hideTimeout) clearTimeout(hideTimeout);
+                    removeCurrentAlert(() => {
+                        if (nextTimeout) clearTimeout(nextTimeout);
+                        nextTimeout = setTimeout(() => {
+                            currentIndex++;
+                            showAlert(currentIndex);
+                        }, 3000);
+                    });
+                });
+                alertContainer.appendChild(alertDiv);
+                activeAlert = alertDiv;
+
+                hideTimeout = setTimeout(() => {
+                    removeCurrentAlert(() => {
+                        if (nextTimeout) clearTimeout(nextTimeout);
+                        nextTimeout = setTimeout(() => {
+                            currentIndex++;
+                            showAlert(currentIndex);
+                        }, 3000);
+                    });
+                }, 3000);
+            }
+
+            setTimeout(() => {
+                if (alertsData.length > 0) showAlert(0);
+            }, 1000);
+
+            // ---------- MODAL FUNCTIONALITY ----------
+            const modal = document.getElementById('activationModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const cancelModalLink = document.getElementById('cancelModalLink');
+
+            window.openModal = function () {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            };
+
+            function closeModal() {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+
+            document.querySelectorAll('.modal-trigger').forEach(trigger => {
+                trigger.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openModal();
+                });
+            });
+
+            closeModalBtn.addEventListener('click', closeModal);
+            cancelModalLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeModal();
+            });
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+
+            document.getElementById('activateNowBtn').addEventListener('click', () => {
+                const planPriceToPay = userData ? userData.planPrice : 12000;
+                window.location.href = `paymentform.html?amount=${planPriceToPay}`;
+            });
+
+            document.querySelectorAll('.action-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.action-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
