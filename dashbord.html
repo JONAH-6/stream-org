@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Dashboard - Stream</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -32,14 +32,114 @@
             backdrop-filter: blur(20px);
             border-radius: 0;
             overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4),
-                0 0 0 1px rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            /* Add bottom padding so content isn't hidden behind fixed action bar */
             padding-bottom: 90px;
-            /* height of action-buttons + some extra */
         }
 
+        /* ----- LIVE ALERTS (TOP NOTIFICATIONS) ----- */
+        .live-alert-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 360px;
+            z-index: 3000;
+            pointer-events: none;
+        }
+
+        .live-alert {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 60px;
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 4px solid #ff3b30;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            pointer-events: auto;
+            animation: slideInTop 0.3s ease-out;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .live-alert.hide {
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none;
+        }
+
+        @keyframes slideInTop {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #2d4a46;
+            border: 2px solid #ff3b30;
+        }
+
+        .alert-info {
+            flex: 1;
+        }
+
+        .alert-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .live-badge {
+            background: #ff3b30;
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 30px;
+            letter-spacing: 0.5px;
+        }
+
+        .alert-text {
+            font-size: 12px;
+            color: #cbd5e0;
+        }
+
+        .join-live-btn {
+            background: linear-gradient(135deg, #ff3b30, #dc2626);
+            border: none;
+            color: white;
+            font-weight: 700;
+            font-size: 12px;
+            padding: 6px 14px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .join-live-btn:hover {
+            transform: scale(1.02);
+            background: #ff4d40;
+        }
+
+        /* rest of your existing styles (unchanged) */
         .dashboard-header {
             padding: 30px 20px 20px;
             background: linear-gradient(to bottom, rgba(40, 60, 90, 0.3), transparent);
@@ -113,6 +213,18 @@
             margin-bottom: 5px;
             letter-spacing: -1px;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .plan-badge {
+            display: inline-block;
+            background: rgba(79, 209, 199, 0.2);
+            border: 1px solid rgba(79, 209, 199, 0.5);
+            border-radius: 30px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4fd1c7;
+            margin-bottom: 15px;
         }
 
         .balance-note {
@@ -261,7 +373,6 @@
             box-shadow: 0 6px 20px rgba(245, 101, 101, 0.3);
         }
 
-        /* === FIXED ACTION BUTTONS === */
         .action-buttons {
             position: fixed;
             bottom: 0;
@@ -316,7 +427,6 @@
             font-size: 18px;
         }
 
-        /* === MODAL – unchanged === */
         .activation-modal {
             display: none;
             position: fixed;
@@ -445,7 +555,6 @@
             color: #ffffff;
         }
 
-        /* responsive adjustments */
         @media (max-width: 600px) {
             .dashboard-header {
                 padding: 20px 15px;
@@ -480,17 +589,28 @@
                 padding: 12px 5px;
                 font-size: 12px;
             }
-        }
 
-        @media (max-width: 400px) {
-            .quick-links-grid {
-                grid-template-columns: repeat(2, 1fr);
+            .live-alert {
+                padding: 6px 10px;
+            }
+
+            .alert-avatar {
+                width: 36px;
+                height: 36px;
+            }
+
+            .join-live-btn {
+                padding: 4px 12px;
+                font-size: 10px;
             }
         }
     </style>
 </head>
 
 <body>
+    <!-- Live Alert Container (top floating notifications) -->
+    <div class="live-alert-container" id="liveAlertContainer"></div>
+
     <div class="dashboard-container">
         <!-- Header -->
         <div class="dashboard-header">
@@ -504,13 +624,14 @@
                 </div>
             </div>
 
-            <!-- Earnings Card -->
+            <!-- Earnings Card (dynamic based on plan) -->
             <div class="earnings-card">
                 <div class="earnings-label">
-                    <i class="fas fa-chart-line"></i> All Time Earnings
+                    <i class="fas fa-chart-line"></i> Your Plan
                 </div>
-                <div class="earnings-amount">₦12,000</div>
-                <div class="balance-note">Activate your account to start earning</div>
+                <div class="plan-badge" id="planBadge">Stream Reward Plus</div>
+                <div class="earnings-amount" id="earningsAmount">₦12,000</div>
+                <div class="balance-note" id="balanceNote">Activate your account to start earning</div>
                 <button class="withdraw-btn modal-trigger">
                     <i class="fas fa-wallet"></i> Withdraw
                 </button>
@@ -566,17 +687,15 @@
             <div class="stream-header">
                 <div class="boost-badge">x10 BOOST</div>
                 <h3>Join. Stream. Earn</h3>
-                <p>Join Livestreams on TikTok for x10 boost</p>
+                <p id="streamMessage">Join Livestreams on TikTok for x10 boost</p>
             </div>
             <button class="join-btn modal-trigger">
                 <i class="fab fa-tiktok"></i> Join Stream
             </button>
         </div>
-
-        <!-- The action-buttons div remains here but will be fixed via CSS -->
     </div>
 
-    <!-- Fixed Action Buttons (moved outside container to avoid nesting issues, but still fixed) -->
+    <!-- Fixed Action Buttons -->
     <div class="action-buttons">
         <button class="action-btn active modal-trigger">
             <div class="action-icon"><i class="fas fa-bolt"></i></div>
@@ -604,72 +723,168 @@
             </div>
             <div class="activation-icon"><i class="fas fa-lock"></i></div>
             <h2 class="activation-title">Kindly Activate Account</h2>
-            <p class="activation-message">You need to activate your account to access withdrawals and other features.
-            </p>
+            <p class="activation-message" id="modalMessage">You need to activate your account to access withdrawals and
+                other features.</p>
             <button class="activate-now-btn" id="activateNowBtn"><i class="fas fa-bolt"></i> Activate Account</button>
             <a class="cancel-link" id="cancelModalLink">Maybe later</a>
         </div>
     </div>
 
     <script>
-        // Load user data
         document.addEventListener('DOMContentLoaded', function () {
+            // ---------- USER DATA ----------
             const userData = JSON.parse(localStorage.getItem('streamUserData'));
-
-            if (userData) {
-                const firstName = userData.fullName.split(' ')[0];
-                document.getElementById('welcomeName').textContent = `Welcome back, ${firstName}!`;
-                document.getElementById('userEmail').textContent = userData.email;
-
-                const initials = userData.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-                document.getElementById('userAvatar').innerHTML = initials || '<i class="fas fa-user"></i>';
-            } else {
+            if (!userData) {
                 alert('Please complete registration first');
                 window.location.href = 'form.html';
+                return;
             }
-        });
 
-        // Modal functionality
-        const modal = document.getElementById('activationModal');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const cancelModalLink = document.getElementById('cancelModalLink');
+            const firstName = userData.fullName.split(' ')[0];
+            document.getElementById('welcomeName').textContent = `Welcome back, ${firstName}!`;
+            document.getElementById('userEmail').textContent = userData.email;
+            const initials = userData.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+            document.getElementById('userAvatar').innerHTML = initials || '<i class="fas fa-user"></i>';
 
-        function openModal() {
-            modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
+            const planPrice = userData.planPrice || 12000;
+            const planName = userData.plan === 'premium' ? 'Stream Reward Premium' : 'Stream Reward Plus';
+            const earningsAmountEl = document.getElementById('earningsAmount');
+            const planBadgeEl = document.getElementById('planBadge');
+            const balanceNoteEl = document.getElementById('balanceNote');
+            const streamMessageEl = document.getElementById('streamMessage');
+            const modalMessageEl = document.getElementById('modalMessage');
 
-        function closeModal() {
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
+            if (planPrice == 20000) {
+                earningsAmountEl.textContent = '₦20,000';
+                planBadgeEl.textContent = planName;
+                balanceNoteEl.innerHTML = 'Premium Plan – Higher daily earnings';
+                streamMessageEl.innerHTML = 'Join Livestreams on TikTok for x15 BOOST (Premium benefit)';
+                modalMessageEl.innerHTML = 'You are on the Premium Plan. Activate your account to unlock x15 boost and higher withdrawal limits.';
+            } else {
+                earningsAmountEl.textContent = '₦12,000';
+                planBadgeEl.textContent = planName;
+                balanceNoteEl.innerHTML = 'Activate your account to start earning up to ₦12,200 daily';
+                streamMessageEl.innerHTML = 'Join Livestreams on TikTok for x10 boost';
+                modalMessageEl.innerHTML = 'You need to activate your account to access withdrawals and other features.';
+            }
 
-        document.querySelectorAll('.modal-trigger').forEach(trigger => {
-            trigger.addEventListener('click', (e) => {
-                e.preventDefault();
-                openModal();
+            // ---------- INFINITE LOOPING LIVE ALERTS (6 people now) ----------
+            const alertsData = [
+                { name: "Peller", image: "peller.jpg", alt: "Peller live" },
+                { name: "Cater", image: "cater.png", alt: "Cater live" },
+                { name: "indialove", image: "indiana.png", alt: "indialove live" },
+                { name: "Shankcomics", image: "shark.png", alt: "Shankcomics live" },
+                { name: "OkikiDft", image: "okiki.png", alt: "OkikiDft live" },
+                { name: "JARVIS AI", image: "javis.jpeg", alt: "JARVIS AI live" }
+            ];
+
+            const alertContainer = document.getElementById('liveAlertContainer');
+            let currentIndex = 0;
+            let activeAlert = null;
+            let hideTimeout = null;
+            let nextTimeout = null;
+
+            function removeCurrentAlert(callback) {
+                if (activeAlert) {
+                    activeAlert.classList.add('hide');
+                    setTimeout(() => {
+                        if (activeAlert && activeAlert.parentNode) activeAlert.remove();
+                        activeAlert = null;
+                        if (callback) callback();
+                    }, 300);
+                    if (hideTimeout) clearTimeout(hideTimeout);
+                    hideTimeout = null;
+                } else {
+                    if (callback) callback();
+                }
+            }
+
+            function showAlert(index) {
+                const alert = alertsData[index % alertsData.length];
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'live-alert';
+                alertDiv.innerHTML = `
+                    <img class="alert-avatar" src="${alert.image}" alt="${alert.alt}" onerror="this.src='https://via.placeholder.com/44?text=?'">
+                    <div class="alert-info">
+                        <div class="alert-name">
+                            ${alert.name} <span class="live-badge">LIVE</span>
+                        </div>
+                        <div class="alert-text">is now streaming</div>
+                    </div>
+                    <button class="join-live-btn">Join Live</button>
+                `;
+                const joinBtn = alertDiv.querySelector('.join-live-btn');
+                joinBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openModal();
+                    if (hideTimeout) clearTimeout(hideTimeout);
+                    removeCurrentAlert(() => {
+                        if (nextTimeout) clearTimeout(nextTimeout);
+                        nextTimeout = setTimeout(() => {
+                            currentIndex++;
+                            showAlert(currentIndex);
+                        }, 3000);
+                    });
+                });
+                alertContainer.appendChild(alertDiv);
+                activeAlert = alertDiv;
+
+                hideTimeout = setTimeout(() => {
+                    removeCurrentAlert(() => {
+                        if (nextTimeout) clearTimeout(nextTimeout);
+                        nextTimeout = setTimeout(() => {
+                            currentIndex++;
+                            showAlert(currentIndex);
+                        }, 3000);
+                    });
+                }, 3000);
+            }
+
+            setTimeout(() => {
+                if (alertsData.length > 0) showAlert(0);
+            }, 1000);
+
+            // ---------- MODAL FUNCTIONALITY ----------
+            const modal = document.getElementById('activationModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const cancelModalLink = document.getElementById('cancelModalLink');
+
+            window.openModal = function () {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            };
+
+            function closeModal() {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+
+            document.querySelectorAll('.modal-trigger').forEach(trigger => {
+                trigger.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openModal();
+                });
             });
-        });
 
-        closeModalBtn.addEventListener('click', closeModal);
-        cancelModalLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            closeModal();
-        });
+            closeModalBtn.addEventListener('click', closeModal);
+            cancelModalLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeModal();
+            });
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
 
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) closeModal();
-        });
+            document.getElementById('activateNowBtn').addEventListener('click', () => {
+                const planPriceToPay = userData ? userData.planPrice : 12000;
+                window.location.href = `paymentform.html?amount=${planPriceToPay}`;
+            });
 
-        document.getElementById('activateNowBtn').addEventListener('click', () => {
-            window.location.href = 'paymentform.html';
-        });
-
-        // Active state for bottom buttons
-        document.querySelectorAll('.action-btn').forEach(btn => {
-            btn.addEventListener('click', function () {
-                document.querySelectorAll('.action-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
+            document.querySelectorAll('.action-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.action-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
             });
         });
     </script>
