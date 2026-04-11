@@ -410,18 +410,18 @@
         <div class="payment-details">
             <h3>Complete Payment</h3>
 
-            <!-- UPDATED ACCOUNT DETAILS (new number & name) -->
+            <!-- ✅ UPDATED ACCOUNT DETAILS (as requested: 0443540156 / Wema / Amarachi blessing) -->
             <div class="payment-item">
                 <span class="payment-label">Account Number</span>
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <span class="payment-value" id="accountNumber">0445978623</span>
-                    <button class="copy-btn" data-copy="0445978623">Copy</button>
+                    <span class="payment-value" id="accountNumber">0443540156</span>
+                    <button class="copy-btn" data-copy="0443540156">Copy</button>
                 </div>
             </div>
 
             <div class="payment-item">
                 <span class="payment-label">Account Name</span>
-                <span class="payment-value" id="accountName">FAVOUR ONYINYECHUKWU MALINZE</span>
+                <span class="payment-value" id="accountName">Amarachi blessing</span>
             </div>
 
             <div class="payment-item">
@@ -540,19 +540,25 @@
 
         startTimer(5 * 60);
 
-        // Copy button (updated with new account number)
-        document.querySelector('.copy-btn[data-copy="0445978623"]').addEventListener('click', function () {
-            const textToCopy = this.getAttribute('data-copy');
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const originalText = this.textContent;
-                this.textContent = 'Copied ✓';
-                this.style.background = 'linear-gradient(135deg, #1f6f6a 0%, #4fa6a0 100%)';
-                setTimeout(() => {
-                    this.textContent = originalText;
-                    this.style.background = 'linear-gradient(135deg, #4fa6a0 0%, #1f6f6a 100%)';
-                }, 2000);
+        // Copy button (using the NEW account number 0443540156)
+        const copyBtn = document.querySelector('.copy-btn[data-copy="0443540156"]');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', function () {
+                const textToCopy = this.getAttribute('data-copy');
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    const originalText = this.textContent;
+                    this.textContent = 'Copied ✓';
+                    this.style.background = 'linear-gradient(135deg, #1f6f6a 0%, #4fa6a0 100%)';
+                    setTimeout(() => {
+                        this.textContent = originalText;
+                        this.style.background = 'linear-gradient(135deg, #4fa6a0 0%, #1f6f6a 100%)';
+                    }, 2000);
+                }).catch(() => {
+                    // fallback for older browsers
+                    alert("Press Ctrl+C to copy: " + textToCopy);
+                });
             });
-        });
+        }
     </script>
 </body>
 
